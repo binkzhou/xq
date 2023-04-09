@@ -7,7 +7,7 @@ class Board {
     }
     draw(ctx: CanvasRenderingContext2D) {
 
-        const x = 10;
+        const x = 50;
         const y = 10;
         ctx.save();
         ctx.beginPath();
@@ -50,8 +50,8 @@ class Board {
         }
 
         ctx.font = "40px serif";
-        ctx.fillText("楚河", 75, 250);
-        ctx.fillText("汉界", 275, 250);
+        ctx.fillText("楚河", x+65, x+240);
+        ctx.fillText("汉界", x+265, x+240);
 
         // 绘制上面九宫
         ctx.moveTo(150 + x, 0 + x);
@@ -204,6 +204,7 @@ class Board {
         ctx.moveTo(3+350 + x, 350+12 + x);
         ctx.lineTo(3+350 + x, 350+3 + x);
         ctx.stroke();
+        ctx.closePath();
     }
 }
 

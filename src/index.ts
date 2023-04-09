@@ -8,8 +8,8 @@ const stage = new Stage(canvas);
 
 const chessman = new Chessman();
 
-const board = new Board();
+// const board = new Board();
 
 
-stage.add(board);
+// stage.add(board);
 // stage.add(chessman);

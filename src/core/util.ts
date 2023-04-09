@@ -3,7 +3,7 @@ const getTextHeight = (text: string) => {
   canvas.width = 500;
   canvas.height = 500;
   const ctx = canvas.getContext("2d");
-  ctx.font = "60px serif";
+  ctx.font = "20px serif";
   ctx.fillText(text, 0, 0);
   const imgDt = ctx?.getImageData(0, 0, 200, 300);
   const data = imgDt?.data;
