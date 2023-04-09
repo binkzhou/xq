@@ -6,6 +6,13 @@ class Stage {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private list: ChessmanType[][] = [];
+  private move:{
+    startRow:number;
+    startColum:number;
+    endRow:number;
+    endColumn:number;
+    status:"star"|"end"
+  }
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d");
@@ -63,7 +70,41 @@ class Stage {
     
     this.list = chessBoard;
     this.drawChessman();
+    this.move = {startRow:-1,startColum:-1,endRow:-1,endColumn:-1,status:"star"}
+    this.canvas.addEventListener("click",e=>{
+      const {x,y} = e;
+      const row = Math.ceil((y-100+25)/50);
+      const colum = Math.ceil((x-100+25)/50);
+      console.log("row",row);
+      console.log("colum",colum);
+      
+      if(!(row>=0&&colum>=0&&row<=9&&colum<=8)){
+        return;
+      }
+      const item = this.list[row][colum];
+      
+      if(this.move.status&&this.move.status === 'end'){
+        this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
 
+        this.list[this.move.startRow][this.move.startColum] = {type:"NONE",chess:-1}
+        console.log("@",this.list);
+        this.move.status = "star";
+      }else{
+        if(item.type!=='NONE'){
+          this.move.startRow = row;
+          this.move.startColum = colum;
+          this.move.status = "end";
+        }
+      }
+
+      this.ctx.clearRect(0,0,canvas.width,canvas.height);
+      this.drawBoard(this.ctx)
+      this.drawChessman();
+
+      // console.log(this.list);
+      
+      
+    })
   }
 
   // 绘制棋盘
@@ -74,6 +115,8 @@ class Stage {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(x, x);
+    this.ctx.strokeStyle = "black"
+    this.ctx.lineWidth = 1;
     ctx.lineTo(400 + x, 0 + x);
     ctx.moveTo(0 + x, 0 + x);
     ctx.lineTo(0 + x, 450 + x);
@@ -110,7 +153,7 @@ class Stage {
       ctx.moveTo(50 * i + x, 250 + x);
       ctx.lineTo(50 * i + x, 450 + x);
     }
-
+    this.ctx.fillStyle = "black"
     ctx.font = "40px serif";
     ctx.fillText("楚河", x + 65, x + 240);
     ctx.fillText("汉界", x + 265, x + 240);
@@ -271,15 +314,6 @@ class Stage {
 
 
   drawChessman() {
-    /**
-     * JIANG: 1,
-  SHI: 2,
-  XIANG: 3,
-  MA: 4,
-  JU: 5,
-  PAO: 6,
-  ZU: 7
-     */
     const blackChessman = ['NONE', '将', '士','象', '馬', '車', '炮', '卒'];
     const redChessman =   ['NONE', '帥', '仕','相', '馬', '車', '炮', '兵'];
     const padding = 50;
@@ -288,14 +322,18 @@ class Stage {
         const item = this.list[i][j];
         if (item.type !== 'NONE') {
           this.ctx.beginPath();
-          this.ctx.arc(j * 50 + padding, i * 50 + padding, 20, 0, 2 * Math.PI);
+          this.ctx.arc(j * 50 + padding, i * 50 + padding, 22, 0, 2 * Math.PI);
           this.ctx.fillStyle = "white"
           this.ctx.fill();
+          this.ctx.lineWidth = 2;
+          this.ctx.strokeStyle = "black"
           if(item.type==='RED'){
             this.ctx.strokeStyle = "red"
           }
           this.ctx.stroke();
-          this.ctx.font = "20px serif";
+          this.ctx.font = "40px 楷体";
+          this.ctx.fillStyle = "black"
+
           this.ctx.fillStyle = "black"
           let text = blackChessman[item.chess];
           if(item.type==='RED'){
@@ -303,7 +341,7 @@ class Stage {
             text = redChessman[item.chess];
           }
           const width = this.ctx.measureText(text).width;
-          this.ctx.fillText(text, j * 50 + padding - width / 2, i * 50 + padding + 8);
+          this.ctx.fillText(text, j * 50 + padding - width / 2, i * 50 + padding+14);
 
 
           this.ctx.stroke();
