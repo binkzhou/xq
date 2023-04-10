@@ -6,12 +6,12 @@ class Stage {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private list: ChessmanType[][] = [];
-  private move:{
-    startRow:number;
-    startColum:number;
-    endRow:number;
-    endColumn:number;
-    status:"star"|"end"
+  private move: {
+    startRow: number;
+    startColum: number;
+    endRow: number;
+    endColumn: number;
+    status: "star" | "end"
   }
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -67,88 +67,165 @@ class Stage {
     chessBoard[6][6] = { type: 'RED', chess: CHESS_TYPE.ZU };
     chessBoard[6][8] = { type: 'RED', chess: CHESS_TYPE.ZU };
 
-    
+
     this.list = chessBoard;
     this.drawChessman();
-    this.move = {startRow:-1,startColum:-1,endRow:-1,endColumn:-1,status:"star"}
-    this.canvas.addEventListener("click",e=>{
-      const {x,y} = e;
-      const row = Math.ceil((y-100+25)/50);
-      const colum = Math.ceil((x-100+25)/50);
-      console.log("row",row);
-      console.log("colum",colum);
-      
-      if(!(row>=0&&colum>=0&&row<=9&&colum<=8)){
+    this.move = { startRow: -1, startColum: -1, endRow: -1, endColumn: -1, status: "star" }
+    this.canvas.addEventListener("click", e => {
+      const { x, y } = e;
+      const row = Math.ceil((y - 100 + 25) / 50);
+      const colum = Math.ceil((x - 100 + 25) / 50);
+      console.log("row", row);
+      console.log("colum", colum);
+
+      if (!(row >= 0 && colum >= 0 && row <= 9 && colum <= 8)) {
         return;
       }
       const item = this.list[row][colum];
-      
-      if(this.move.status&&this.move.status === 'end'){
-        
+
+      if (this.move.status && this.move.status === 'end') {
+
         const endChessman = this.list[row][colum];
 
         // 不能吃自己的棋子
-        if(endChessman.type === this.list[this.move.startRow][this.move.startColum].type){
+        if (endChessman.type === this.list[this.move.startRow][this.move.startColum].type) {
           return;
         }
-       
+
         // console.log("@",this.list);
         this.move.status = "star";
         const chess = this.list[this.move.startRow][this.move.startColum].chess;
-        
-        switch(chess){
-          case CHESS_TYPE.JU:
 
-  
+        switch (chess) {
+          case CHESS_TYPE.JU:
             // 车的走法
-            if(row!==this.move.startRow&&colum!==this.move.startColum){
+            if (row !== this.move.startRow && colum !== this.move.startColum) {
               return;
             }
 
-            if(row===this.move.startRow){
-              const min = Math.min(this.move.startColum,colum);
-              const max = Math.max(this.move.startColum,colum);
-              console.log("min",min);
-              console.log("max",max);
-              
-              for(let i=min+1;i<max;i++){
-                if(this.list[row][i].type!=='NONE'){
+            if (row === this.move.startRow) {
+              const min = Math.min(this.move.startColum, colum);
+              const max = Math.max(this.move.startColum, colum);
+              console.log("min", min);
+              console.log("max", max);
+
+              for (let i = min + 1; i < max; i++) {
+                if (this.list[row][i].type !== 'NONE') {
                   return;
                 }
               }
             }
 
-            if(colum===this.move.startColum){
-              const min = Math.min(this.move.startRow,row);
-              const max = Math.max(this.move.startRow,row);
-              console.log("min",min);
-              for(let i=min+1;i<max;i++){
-                if(this.list[i][colum].type!=='NONE'){
+            if (colum === this.move.startColum) {
+              const min = Math.min(this.move.startRow, row);
+              const max = Math.max(this.move.startRow, row);
+              console.log("min", min);
+              for (let i = min + 1; i < max; i++) {
+                if (this.list[i][colum].type !== 'NONE') {
                   return;
                 }
               }
             }
 
             this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
-            this.list[this.move.startRow][this.move.startColum] = {type:"NONE",chess:-1};
-          break;
+            this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
+            break;
+
+          case CHESS_TYPE.PAO:
+
+            // 只能横着或竖着走
+            if (row !== this.move.startRow && colum !== this.move.startColum) {
+              return;
+            }
+
+            if (row === this.move.startRow) {
+              // 自己
+              const sleft = this.list[this.move.startRow][this.move.startColum].type;
+              // 敌方
+              const enemy = this.list[row][colum];
+              const color = sleft === 'BLACK' ? "RED" : "BLACK"
+
+              const min = Math.min(this.move.startColum, colum);
+              const max = Math.max(this.move.startColum, colum);
+
+              // 如果终点是敌方棋子
+              if (enemy.type === color) {
+                let interval = 0;
+                for (let i = min + 1; i < max; i++) {
+                  if (this.list[row][i].type !== 'NONE') {
+                    interval +=1;
+                  }
+                }
+
+                if(interval!==1){
+                  return;
+                }
+
+              } else {
+                // 如果是空白区域
+                for (let i = min + 1; i < max; i++) {
+                  if (this.list[row][i].type !== 'NONE') {
+                    return;
+                  }
+                }
+              }
+
+
+            }
+
+            if (colum === this.move.startColum) {
+              // 自己
+              const sleft = this.list[this.move.startRow][this.move.startColum].type;
+              // 敌方
+              const enemy = this.list[row][colum];
+              const color = sleft === 'BLACK' ? "RED" : "BLACK"
+
+              const min = Math.min(this.move.startRow, row);
+              const max = Math.max(this.move.startRow, row);
+
+              // 如果终点是敌方棋子
+              if (enemy.type === color) {
+                let interval = 0;
+                for (let i = min + 1; i < max; i++) {
+                  if (this.list[i][colum].type !== 'NONE') {
+                    interval +=1;
+                  }
+                }
+
+                if(interval!==1){
+                  return;
+                }
+
+              } else {
+                // 如果是空白区域
+                for (let i = min + 1; i < max; i++) {
+                  if (this.list[i][colum].type !== 'NONE') {
+                    return;
+                  }
+                }
+              }
+            }
+
+            this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
+            this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
+            break;
         }
-        
-      }else{
-        if(item.type!=='NONE'){
+
+      } else {
+        if (item.type !== 'NONE') {
           this.move.startRow = row;
           this.move.startColum = colum;
           this.move.status = "end";
         }
       }
 
-      this.ctx.clearRect(0,0,canvas.width,canvas.height);
+      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
       this.drawBoard(this.ctx)
       this.drawChessman();
 
       // console.log(this.list);
-      
-      
+
+
     })
   }
 
@@ -359,8 +436,8 @@ class Stage {
 
 
   drawChessman() {
-    const blackChessman = ['NONE', '将', '士','象', '馬', '車', '炮', '卒'];
-    const redChessman =   ['NONE', '帥', '仕','相', '馬', '車', '炮', '兵'];
+    const blackChessman = ['NONE', '将', '士', '象', '馬', '車', '炮', '卒'];
+    const redChessman = ['NONE', '帥', '仕', '相', '馬', '車', '炮', '兵'];
     const padding = 50;
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 9; j++) {
@@ -372,7 +449,7 @@ class Stage {
           this.ctx.fill();
           this.ctx.lineWidth = 2;
           this.ctx.strokeStyle = "black"
-          if(item.type==='RED'){
+          if (item.type === 'RED') {
             this.ctx.strokeStyle = "red"
           }
           this.ctx.stroke();
@@ -381,12 +458,12 @@ class Stage {
 
           this.ctx.fillStyle = "black"
           let text = blackChessman[item.chess];
-          if(item.type==='RED'){
+          if (item.type === 'RED') {
             this.ctx.fillStyle = "red"
             text = redChessman[item.chess];
           }
           const width = this.ctx.measureText(text).width;
-          this.ctx.fillText(text, j * 50 + padding - width / 2, i * 50 + padding+14);
+          this.ctx.fillText(text, j * 50 + padding - width / 2, i * 50 + padding + 14);
 
 
           this.ctx.stroke();
