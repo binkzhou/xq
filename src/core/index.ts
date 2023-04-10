@@ -84,11 +84,56 @@ class Stage {
       const item = this.list[row][colum];
       
       if(this.move.status&&this.move.status === 'end'){
-        this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
+        
+        const endChessman = this.list[row][colum];
 
-        this.list[this.move.startRow][this.move.startColum] = {type:"NONE",chess:-1}
-        console.log("@",this.list);
+        // 不能吃自己的棋子
+        if(endChessman.type === this.list[this.move.startRow][this.move.startColum].type){
+          return;
+        }
+       
+        // console.log("@",this.list);
         this.move.status = "star";
+        const chess = this.list[this.move.startRow][this.move.startColum].chess;
+        
+        switch(chess){
+          case CHESS_TYPE.JU:
+
+  
+            // 车的走法
+            if(row!==this.move.startRow&&colum!==this.move.startColum){
+              return;
+            }
+
+            if(row===this.move.startRow){
+              const min = Math.min(this.move.startColum,colum);
+              const max = Math.max(this.move.startColum,colum);
+              console.log("min",min);
+              console.log("max",max);
+              
+              for(let i=min+1;i<max;i++){
+                if(this.list[row][i].type!=='NONE'){
+                  return;
+                }
+              }
+            }
+
+            if(colum===this.move.startColum){
+              const min = Math.min(this.move.startRow,row);
+              const max = Math.max(this.move.startRow,row);
+              console.log("min",min);
+              for(let i=min+1;i<max;i++){
+                if(this.list[i][colum].type!=='NONE'){
+                  return;
+                }
+              }
+            }
+
+            this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
+            this.list[this.move.startRow][this.move.startColum] = {type:"NONE",chess:-1};
+          break;
+        }
+        
       }else{
         if(item.type!=='NONE'){
           this.move.startRow = row;
