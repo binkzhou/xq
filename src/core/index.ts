@@ -249,7 +249,28 @@ class Stage {
             this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
             this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
             break;
-          
+            case CHESS_TYPE.SHI:
+              //实现士
+              const type = this.list[this.move.startRow][this.move.startColum].type;
+              if(type==='BLACK'){
+                if(!((row===0&&colum===3)||(row===0&&colum===5)||(row===1&&colum===4)||(row===2&&colum===3)||(row===2&&colum===5))){
+                  return;
+                }
+              }
+
+              if(type==='RED'){
+                if(!((row===7&&colum===3)||(row===7&&colum===5)||(row===8&&colum===4)||(row===9&&colum===3)||(row===9&&colum===5))){
+                  return;
+                }
+              }
+
+              if(![1,-1].includes(this.move.startRow-row)){
+                return;
+              }
+
+              this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
+              this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
+              break;
           }
 
       } else {
