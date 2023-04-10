@@ -205,11 +205,52 @@ class Stage {
                 }
               }
             }
+            this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
+            this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
+            break;
+          case CHESS_TYPE.MA:
+            // 馬跳日
+            const {startRow,startColum} = this.move;
+            const condition1 = row===startRow-2&&colum===startColum+1;
+            const condition2 = row===startRow-1&&colum===startColum+2;
+            const condition3 = row===startRow+1&&colum===startColum+2;
+            const condition4 = row===startRow+2&&colum===startColum+1;
+            const condition5 = row===startRow+2&&colum===startColum-1;
+            const condition6 = row===startRow+1&&colum===startColum-2;
+            const condition7 = row===startRow-1&&colum===startColum-2;
+            const condition8 = row===startRow-2&&colum===startColum-1;
+            if(!(condition1||condition2||condition3||condition4||condition5||condition6||condition7||condition8)){
+              return;
+            }
+
+            // 撇脚
+            if((condition1||condition8)&&this.list[startRow-1][startColum].type!=='NONE'){
+              return;
+
+            }
+
+            if((condition2||condition3)&&this.list[startRow][startColum+1].type!=='NONE'){
+              return;
+
+            }
+
+            if((condition4||condition5)&&this.list[startRow+1][startColum].type!=='NONE'){
+              return;
+
+            }
+
+
+            if((condition6||condition7)&&this.list[startRow][startColum-1].type!=='NONE'){
+              return;
+
+            }
+
 
             this.list[row][colum] = this.list[this.move.startRow][this.move.startColum];
             this.list[this.move.startRow][this.move.startColum] = { type: "NONE", chess: -1 };
             break;
-        }
+          
+          }
 
       } else {
         if (item.type !== 'NONE') {
